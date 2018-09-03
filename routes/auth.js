@@ -77,6 +77,7 @@ router.post('/verifyToken',
   global.middlewares.logBodyAndUploadedFile,
   [
       check('token').exists().withMessage("Token field is required")
+      .isJWT().withMessage("Invalid token")
   ],
   (req,res,next)=> {
     const errors = validationResult(req);
