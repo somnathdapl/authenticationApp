@@ -8,7 +8,7 @@ let UserModel = require('../models/user.model');
   global.middlewares.logBodyAndUploadedFile,
   (req, res, next) => {
 
-    UserModel.findOne({uid:req.body.uid,password:req.body.password})
+    UserModel.findOne({uid:req.body.uid, password:req.body.password})
       .then((userDoc) => {
 
       console.log("login findOne userDoc", userDoc);
@@ -17,7 +17,7 @@ let UserModel = require('../models/user.model');
          .then((JWTToken) => {
           return res.status(200).json({
             status: 1,
-            message: "Accepted your credentials",
+            message: "Authorized",
             data :{
               name:userDoc.name,
               accessToken: JWTToken,
@@ -25,25 +25,27 @@ let UserModel = require('../models/user.model');
           });
         })
         .catch((err) => {
+          console.log(err);
           res.status(200).json({
             status: 0,
             message: "Some error has occoured. Please try after sometime",
-            data: global.constant.string.NULL,
+            data: null,
           });
         });
       }else{
         return res.status(200).json({
           status: 0,
           message: "Invalid uid or password",
-          data: global.constant.string.NULL,
+          data: null,
         });
       }      
   })
   .catch((err) => {
+    console.log(err);
     res.status(200).json({
       status: 0,
       message: "Some error has occoured. Please try after sometime",
-      data: global.constant.string.NULL,
+      data: null,
     });
   });
 });

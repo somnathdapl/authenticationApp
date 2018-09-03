@@ -12,12 +12,12 @@ let UserSchema = new Schema({
 });
 
 UserSchema.pre('find', function (next) {
-  global.commonFunction.customLog("user pre hook find");
+  console.log("user pre hook find");
   next();
 });
 
 UserSchema.pre('findOne', (next) => {
-  global.commonFunction.customLog("user pre hook findOne");
+  console.log("user pre hook findOne");
   next();
 });
 
