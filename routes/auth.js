@@ -1,12 +1,35 @@
 const express = require('express')
   , router = express.Router()
-  , commonMethods = require('../lib/common');
+  , commonMethods = require('../lib/common')
+  , { check, validationResult } = require('express-validator/check');
 
 let UserModel = require('../models/user.model');
 
 router.post('/login',
   global.middlewares.logBodyAndUploadedFile,
+  [
+    check('uid').exists().withMessage("uid field is required"),
+    check('password').exists().withMessage("password field is required"),
+  ],
   (req, res, next) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      var dataErr = [];
+      errors.array().map((field)=> {
+        console.log(field);
+        dataErr.push({
+          field: field.param,
+          message: field.msg,
+        });
+      });
+
+      return res.status(200).json({
+        status: 0,
+        message: "VALIDATION_ERROR",
+        data: dataErr,
+      });
+    }
 
     UserModel.findOne({uid:req.body.uid, password:req.body.password})
       .then((userDoc) => {
@@ -52,7 +75,28 @@ router.post('/login',
 
 router.post('/verifyToken',
   global.middlewares.logBodyAndUploadedFile,
+  [
+      check('token').exists().withMessage("Token field is required")
+  ],
   (req,res,next)=> {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      var dataErr = [];
+      errors.array().map((field)=> {
+        console.log(field);
+        dataErr.push({
+          field: field.param,
+          message: field.msg,
+        });
+      });
+
+      return res.status(200).json({
+        status: 0,
+        message: "VALIDATION_ERROR",
+        data: dataErr,
+      });
+    }
+
     commonMethods.verifyJWTToken(req.body.token)
     .then((decodedResult)=>{
       res.status(200).json({
